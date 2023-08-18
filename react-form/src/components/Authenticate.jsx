@@ -1,3 +1,46 @@
-export default function Authenticate() {
-    return <h2>Authenticate</h2>;
-}
+import { useState } from "react";
+
+export default function Authenticate({ token }) {
+    const [successMessage, setSuccessMessage] = useState(null);
+    const [error, setError] = useState(null);
+  
+    async function handleClick() {
+      try {
+        const response = await fetch(
+            "https://fsa-jwt-practice.herokuapp.com/signup",
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
+                },
+            }
+        );
+
+        const result = await response.json();
+
+        if (response.ok){
+          setSuccessMessage(result.message);
+        } else {
+          setError("Authentication failed");
+        }
+      }catch (error) {
+        setError(error.message);
+      }
+    }
+
+    return (
+      <div>
+        <h2>Authenticate</h2>
+        {successMessage && <p>{successMessage}</p>}
+        {error && <p>{error}</p>}
+        <button onClick={handleClick}>Authenticate Token!</button>
+      </div>
+    );
+  }
+
+  // eslint-disable-next-line react/prop-types
+Authenticate.propTypes = {
+  // token is destructured from props, so it doesn't need prop type validation here
+  token: () => {},
+};
